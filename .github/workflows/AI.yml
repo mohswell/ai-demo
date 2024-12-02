@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Run linter
         run: npm run lint
@@ -25,10 +25,10 @@ jobs:
     needs: lint
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Bunjy-AI              
-        uses: mohswell/mintify@V1.1.1
+        uses: mohswell/mintify@v1.1.3
         with:
           BASE_APP_URL: ${{ secrets.BASE_APP_URL }}
           API_KEY: ${{ secrets.API_KEY }}
@@ -39,7 +39,7 @@ jobs:
     needs: ai
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Run tests
         run: npm test
