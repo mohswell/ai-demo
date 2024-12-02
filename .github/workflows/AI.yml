@@ -1,0 +1,60 @@
+name: Mintify
+
+on:
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Notify QA if lint fails
+        if: failure()
+        run: echo "Linting failed. Notifying QA."
+
+  ai:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Bunjy-AI              
+        uses: mohswell/mintify@v1.0
+        with:
+          base_app_url: ${{ secrets.BASE_APP_URL }}
+          api_key: ${{ secrets.API_KEY }}
+
+  test:
+    runs-on: ubuntu-latest
+    needs: ai
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run tests
+        run: npm test
+
+  merge:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Merge to main
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout main
+          git merge ${{ github.sha }}
+          git push origin main
