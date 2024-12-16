@@ -1,1 +1,1 @@
-console.log("AI is the future");
+console.log("Git AI is the future");
